@@ -28,16 +28,19 @@ getPrice <- function(){
     }
     
     msg <- print_time()
-    msg <- as.character(msg)
     
     #Send notification to phone
-
-    pushover(message = msg, user = userID, app = appToken)
+    
+    if(msg <= 1300){
+      
+        msg <- as.character(msg)
+        pushover(message = msg, user = userID, app = appToken)
+    }
 }
 
 #Recursion to call function every hour
 
-print_time = function(interval = 3600) {
+print_time = function(interval = 10) {
   getPrice()
   later::later(print_time, interval)
 }
