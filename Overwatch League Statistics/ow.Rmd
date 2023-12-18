@@ -1,0 +1,35 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+data <- read.csv("C:/Users/ndhem/Documents/GitHub/Fun Projects/Overwatch League Statistics/map.csv")
+
+d <- data %>% count(map_name)
+
+z <- data[13467:14971, ]
+z <- z %>% count(map_name)
+
+d <- rename(d, N = "n")
+d <- rename(d, Map = "map_name")
+
+z <- rename(z, N = "n")
+z <- rename(z, Map = "map_name")
+
+ggplot(d, aes(x = reorder(Map, -N), y =  N, fill = reorder(Map, -N))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(title = "Frequency of Maps Played in the OWL (All Time)", x = "Map", fill = "Map")
+
+ggplot(z, aes(x = reorder(Map, -N), y =  N, fill = reorder(Map, -N))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(title = "Frequency of Maps Played in the OWL (OW2)", x = "Map", fill = "Map")
+
+```

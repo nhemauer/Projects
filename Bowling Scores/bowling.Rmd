@@ -1,0 +1,63 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(reshape2)
+library(plm)
+library(ggridges)
+
+data <- read.csv("C:/Users/ndhem/Documents/GitHub/Fun Projects/Bowling Scores/bowling.csv")
+
+df2 <- melt(data, id.vars='Name')
+df2 <- rename(df2, Score = "variable")
+
+ggplot(df2, aes(x = Name, y = value, fill = Score)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle("Highest and Lowest Bowling Scores of Players (2023)") +
+  xlab("Name") +
+  ylab("Score")
+
+```
+
+```{r}
+
+data <- read.csv("C:/Users/ndhem/Documents/GitHub/Fun Projects/Bowling Scores/bowling2.csv")
+
+pData <- pdata.frame(data, index = c("Game", "Name"))
+pData <- as.data.frame(pData)
+
+ggplot(pData, aes(x = Game, y = Score, group = 1)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~Name, ncol = 3) +
+  geom_smooth() + 
+  ggtitle("Bowling Scores by Player (2023)") +
+  xlab("Game") +
+  ylab("Score") +
+  theme_bw()
+
+ggplot(pData, aes(x = Game, y = Score, group = Name, color = Name)) +
+  geom_line(size = .6) +
+  geom_point(aes(shape = Name)) +
+  ggtitle("Bowling Scores by Player (2023)") +
+  xlab("Game") +
+  ylab("Score") +
+  theme_bw()
+
+pData <- subset(pData, Name %in% c("Nick", "Connor", "Blair", "Ben"))
+
+ggplot(pData, aes(x = Score, y = Name, fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis_c(name = "Score", option = "C") +
+  ggtitle("Distribution of Bowling Scores by Player (2023)") +
+  xlab("Score") +
+  ylab("Name")
+
+```
+
