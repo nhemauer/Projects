@@ -38,7 +38,7 @@ getPrice <- function(){
     }
 }
 
-#Recursion to call function every hour
+#Recursion to call function every 10 seconds
 
 print_time = function(interval = 10) {
   getPrice()
