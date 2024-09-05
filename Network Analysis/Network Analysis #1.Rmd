@@ -1,0 +1,64 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+library(haven)
+library(igraph)
+library(dplyr)
+
+data <-  read_dta("C:/Users/ndhem/OneDrive - The Pennsylvania State University/Documents/Network Analysis/SPID_v1.2.dta")
+data_poli <- read_dta("C:/Users/ndhem/OneDrive - The Pennsylvania State University/Documents/Network Analysis/SPID_v1.2_policies.dta")
+
+```
+
+```{r}
+
+edges <- data %>% select(-c(adopt_year))
+edges <- edges %>%
+  filter(if_any(everything(), ~ . %in% c("compact on mental health", 
+                                         "interstate compact on mentally disordered offenders", 
+                                         "mntlhlth")))
+
+edges <- as.matrix(edges)
+g <- graph_from_edgelist(edges, directed = FALSE)
+
+V(g)$color <- ifelse(V(g)$name %in% data$policy, "red", "blue")
+V(g)$shape <- ifelse(V(g)$name %in% data$policy, "square", "circle")
+
+coords <- layout_with_kk(g)
+
+edges <- as.data.frame(edges)
+
+# Calculate the degree of each vertex (i.e., the number of edges connected to it)
+vertex_degrees <- degree(g, mode = "all")
+
+# Assign colors based on the degree (1, 2, or 3)
+vertex_colors <- ifelse(vertex_degrees == 1, "green",
+                        ifelse(vertex_degrees == 2, "orange", 
+                               ifelse(vertex_degrees >= 3, "yellow", "gray")))
+
+vertex_colors[V(g)$name %in% data$policy] <- "red"
+
+# Now plot the graph with colored vertices based on their degree
+plot(g, 
+     vertex.label.cex = 0.8,
+     vertex.label.color = "black",
+     vertex.label.dist = 0.5,
+     vertex.size = 10,
+     edge.width = 1,
+     layout = coords,
+     main = "Mental Health Policies",
+     vertex.color = vertex_colors)
+
+# Add a legend for the colors
+legend("topright",
+       legend = c("1 Policy", "2 Policies", "3+ Policies"), 
+       fill = c("green", "orange", "yellow"), 
+       title = "Number of Connected Policies", cex = 0.8)
+
+```
+
+
